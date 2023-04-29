@@ -1,9 +1,10 @@
 import dotenv from "dotenv";
-dotenv.config();
-
 import express, { Express } from "express";
 import "reflect-metadata";
 import routes from "./routers/index";
+dotenv.config();
+
+var cors = require("cors");
 
 const app: Express = express();
 const port = process.env.PORT;
@@ -23,6 +24,7 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.use(cors());
 app.use("/", routes);
 
 app.listen(port, () => {

@@ -2,13 +2,12 @@ import { plainToClass } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import ItemDetailDto from "../../dtos/item.detail.dto";
 import ItemListDto from "../../dtos/item.list.dto";
+import { getExternalApiURL, getExternalSearchURL } from "../../utils/envVars";
 
-const EXTERNAL_SEARCH_URL = process.env.EXTERNAL_SEARCH_URL;
-const EXTERNAL_API_URL = process.env.EXTERNAL_API_URL;
 const ITEMS_LIMIT = "4";
 
 async function getItems(req: Request, res: Response, next: NextFunction) {
-  if (!EXTERNAL_SEARCH_URL) {
+  if (!getExternalSearchURL()) {
     return res.status(500).json({ message: "Bad configuration settings" });
   }
 
@@ -22,7 +21,7 @@ async function getItems(req: Request, res: Response, next: NextFunction) {
   let items = [];
 
   try {
-    const url = new URL("search", EXTERNAL_SEARCH_URL);
+    const url = new URL("search", getExternalSearchURL());
 
     url.searchParams.append("q", searchBy);
     url.searchParams.append("limit", ITEMS_LIMIT);
@@ -43,7 +42,7 @@ async function getItems(req: Request, res: Response, next: NextFunction) {
   try {
     const urlCategory = new URL(
       `categories/${firstCategoryId}`,
-      EXTERNAL_API_URL
+      getExternalApiURL()
     );
 
     const responseCategory = await fetch(urlCategory.toString(), {
@@ -63,15 +62,15 @@ async function getItems(req: Request, res: Response, next: NextFunction) {
 }
 
 async function getItem(req: Request, res: Response) {
-  if (!EXTERNAL_API_URL) {
+  if (!getExternalApiURL()) {
     return res.status(500).json({ message: "Bad configuration settings" });
   }
   const { itemId } = req.params;
 
-  const urlItem = new URL(`items/${itemId}`, EXTERNAL_API_URL);
+  const urlItem = new URL(`items/${itemId}`, getExternalApiURL());
   const urlDescription = new URL(
     `items/${itemId}/description`,
-    EXTERNAL_API_URL
+    getExternalApiURL()
   );
 
   let results, itemAPI, descriptionAPI;
