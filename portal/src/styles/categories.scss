@@ -1,0 +1,25 @@
+.categories {
+  grid-column: col-start 2 / span 10;
+  display: flex;
+  gap: 10px;
+  justify-items: start;
+
+  span {
+    font-size: 16px;
+    color: $gray-light;
+
+    &::after {
+      margin-left: 10px;
+      content: ">";
+    }
+
+    &:last-child {
+      color: $gray;
+      font-weight: 700;
+
+      &::after {
+        content: "";
+      }
+    }
+  }
+}

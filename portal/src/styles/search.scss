@@ -1,0 +1,60 @@
+.search {
+  background-color: $yellow;
+  display: grid;
+  grid-template-columns: repeat(12, [col-start] 1fr);
+  gap: 20px;
+  padding: 10px 0;
+  margin-bottom: 16px;
+
+  &__wrapper {
+    grid-column: col-start 2 / span 10;
+    width: 100%;
+    display: flex;
+    max-width: $max-width;
+    margin: 0 auto;
+
+    &-logo {
+      margin-right: 35px;
+    }
+  }
+
+  &__form {
+    position: relative;
+    display: flex;
+    align-content: stretch;
+    flex-grow: 1;
+
+    &-input {
+      flex: 1 0 auto;
+      border: none;
+      padding: 10px 60px 10px 20px;
+      border-radius: 4px;
+      font-size: 18px;
+      color: $black;
+
+      &:focus {
+        outline: 1px solid $blue;
+      }
+      &::placeholder {
+        color: $gray-light;
+        font-size: 18px;
+      }
+    }
+
+    &-button {
+      background: $gray-light-2;
+      border-radius: 0 4px 4px 0;
+      border: none;
+      padding: 0.5em 1em;
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+
+      &:hover {
+        background-color: $gray-light;
+      }
+    }
+  }
+}
