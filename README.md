@@ -1,4 +1,4 @@
-# Bienvenido a la prueba para Mercado Libre de Bruno Viera
+# Bienvenido
 
 El proyecto contiene dos carpetas, una conteniendo el sitio y otra conteniendo el servidor.
 
