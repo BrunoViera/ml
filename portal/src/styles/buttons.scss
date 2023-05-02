@@ -8,4 +8,8 @@
   border-radius: 4px;
   border: none;
   padding: 12px 0;
+
+  &:hover {
+    background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
+  }
 }
