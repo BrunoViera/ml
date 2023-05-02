@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import MagnifyingGlassIcon from "../icons/MagnifyingGlass";
 
 export default function Search() {
   const router = useRouter();
@@ -40,11 +41,7 @@ export default function Search() {
             onChange={(e) => setSearchValue(e.target.value)}
           />
           <button className="search__form-button" type="submit">
-            <picture className="">
-              <source srcSet="/assets/ic_Search@2x.png 2x" />
-              <source srcSet="/assets/ic_Search.png" />
-              <img src="/assets/Logo_ML.png" alt="logo" />
-            </picture>
+            <MagnifyingGlassIcon />
           </button>
         </form>
       </div>
