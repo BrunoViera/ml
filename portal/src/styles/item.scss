@@ -18,6 +18,8 @@
 }
 
 .item__list {
+  text-decoration: none;
+  color: $black;
   display: flex;
   gap: 16px;
   padding: 16px 0;
