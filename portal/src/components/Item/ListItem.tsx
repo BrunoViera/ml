@@ -12,7 +12,7 @@ export default function ListItem({ item }: { item: ListItem }) {
         src={item?.picture}
         height={180}
         width={180}
-        alt=""
+        alt="item image"
       />
       <div className="item__list-content">
         <p className="item__list-content-price">

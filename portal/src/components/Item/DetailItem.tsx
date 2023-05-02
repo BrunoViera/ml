@@ -15,7 +15,7 @@ export default function DetailItem({ item }: { item: Item }) {
                 src={item.picture}
                 height={680}
                 width={680}
-                alt=""
+                alt="item image"
               />
             ) : (
               <p>No hay imagen</p>
