@@ -28,6 +28,10 @@ picture {
   }
 }
 
+a {
+  display: flex;
+}
+
 .container {
   font-family: var(--font-figTree);
   height: 100vh;
