@@ -16,9 +16,7 @@ export default function Search() {
   };
 
   useEffect(() => {
-    if (!router.query.q) {
-      setSearchValue("");
-    }
+    setSearchValue(router.query["q"] ? router.query.q.toString() : "");
   }, [router.query]);
 
   return (
