@@ -17,6 +17,12 @@ export default class ItemListDto {
   free_shipping!: boolean;
 
   @Expose()
+  @Transform(({ obj }) => obj.address.state_name, {
+    toClassOnly: true,
+  })
+  state_name!: string;
+
+  @Expose()
   @Transform(({ obj }) =>
     plainToClass(PriceDTO, obj, { excludeExtraneousValues: true })
   )

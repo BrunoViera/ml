@@ -8,11 +8,17 @@ export default class ItemDetailDto {
 
   @Expose() condition!: string;
 
-  @Expose({ name: "thumbnail" }) picture!: string;
+  @Expose() category_id!: string;
+
+  @Expose()
+  @Transform(({ obj }) => obj.pictures[0]?.url, {
+    toClassOnly: true,
+  })
+  picture!: string;
 
   @Expose({ name: "" }) sold_quantity!: number;
 
-  @Expose({ name: "text" }) description!: string;
+  @Expose({ name: "plain_text" }) description!: string;
 
   @Expose()
   @Transform(({ obj }) => obj.shipping.free_shipping, {
