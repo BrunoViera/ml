@@ -44,7 +44,7 @@ picture {
     .content {
       grid-column: col-start 2 / span 10;
       max-width: $max-width;
-      margin: 0 auto;
+      margin: 0 auto 50px;
       display: flex;
       flex-direction: column;
       gap: 16px;
