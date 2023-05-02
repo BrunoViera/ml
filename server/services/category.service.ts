@@ -1,8 +1,9 @@
 import { plainToClass } from "class-transformer";
 import CategoryDto from "../dtos/category.dto";
+import { Category } from "../types";
 import { getExternalApiURL } from "../utils/envVars";
 
-async function getCategory(categoryId: string) {
+async function getCategory(categoryId: string): Promise<Category | undefined> {
   if (!getExternalApiURL()) {
     throw new Error("Bad configuration settings");
   }
@@ -12,24 +13,20 @@ async function getCategory(categoryId: string) {
 
   try {
     result = await fetch(url.toString(), { method: "GET" });
-
     response = await result.json();
   } catch (error) {
     throw new Error("Error with external connection");
   }
 
   try {
-    let category = {};
     if (response) {
-      category = plainToClass(CategoryDto, response, {
+      return plainToClass(CategoryDto, response, {
         excludeExtraneousValues: true,
       });
     }
 
-    return category;
+    return;
   } catch (error) {
-    console.log("concha", error);
-
     throw new Error("Error parsing item");
   }
 }

@@ -1,105 +1,47 @@
-import { plainToClass } from "class-transformer";
-import { NextFunction, Request, Response } from "express";
-import ItemDetailDto from "../../dtos/item.detail.dto";
-import ItemListDto from "../../dtos/item.list.dto";
-import { getExternalApiURL, getExternalSearchURL } from "../../utils/envVars";
+import { Request, Response } from "express";
+import categoryService from "../../services/category.service";
+import itemService from "../../services/item.service";
 
-const ITEMS_LIMIT = "4";
-
-async function getItems(req: Request, res: Response, next: NextFunction) {
-  if (!getExternalSearchURL()) {
-    return res.status(500).json({ message: "Bad configuration settings" });
-  }
-
-  const searchBy: string | undefined = req.query.q?.toString();
-  if (!searchBy) {
-    return res.json({ items: [] });
-  }
-
-  let firstCategoryId;
-  let categories = [];
-  let items = [];
-
+async function getItems(req: Request, res: Response) {
   try {
-    const url = new URL("search", getExternalSearchURL());
+    const searchBy: string | undefined = req.query.q?.toString();
+    const items = await itemService.getItems(searchBy);
 
-    url.searchParams.append("q", searchBy);
-    url.searchParams.append("limit", ITEMS_LIMIT);
+    const cats: Record<string, number> = {};
+    let catId,
+      highestValue = 0;
+    items.forEach((i) => {
+      if (!cats[i.category_id]) {
+        cats[i.category_id] = 1;
+      } else {
+        cats[i.category_id] = cats[i.category_id] + 1;
+      }
 
-    const response = await fetch(url.toString(), { method: "GET" });
-    const body = await response.json();
-    firstCategoryId = body.results?.[0].category_id;
-
-    items = body.results.map((i: unknown) =>
-      plainToClass(ItemListDto, i, { excludeExtraneousValues: true })
-    );
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error with external connection, items" });
-  }
-
-  try {
-    const urlCategory = new URL(
-      `categories/${firstCategoryId}`,
-      getExternalApiURL()
-    );
-
-    const responseCategory = await fetch(urlCategory.toString(), {
-      method: "GET",
+      if (cats[i.category_id] > highestValue) {
+        catId = i.category_id;
+      }
     });
-    const bodyCategory = await responseCategory.json();
-    categories = bodyCategory.path_from_root.map(
-      (c: Record<string, string>) => c.name
-    );
+
+    const category = catId ? await categoryService.getCategory(catId) : null;
+    const categories = category ? category.getPath() : [];
+
+    res.json({ categories, items });
   } catch (error) {
     return res
-      .status(500)
-      .json({ message: "Error with external connection, categories" });
+      .status(400)
+      .json({ message: "Oops, something wrong happened here :/" });
   }
-
-  res.json({ categories, items });
 }
 
 async function getItem(req: Request, res: Response) {
-  if (!getExternalApiURL()) {
-    return res.status(500).json({ message: "Bad configuration settings" });
-  }
-  const { itemId } = req.params;
-
-  const urlItem = new URL(`items/${itemId}`, getExternalApiURL());
-  const urlDescription = new URL(
-    `items/${itemId}/description`,
-    getExternalApiURL()
-  );
-
-  let results, itemAPI, descriptionAPI;
-
   try {
-    results = await Promise.all([
-      fetch(urlItem.toString(), { method: "GET" }),
-      fetch(urlDescription.toString(), { method: "GET" }),
-    ]);
-
-    itemAPI = await results[0].json();
-    descriptionAPI = await results[1].json();
-  } catch (error) {
-    return res.status(500).json({ message: "Error with external connection" });
-  }
-
-  try {
-    let item = {};
-    if (itemAPI && descriptionAPI) {
-      item = plainToClass(
-        ItemDetailDto,
-        { ...itemAPI, ...descriptionAPI },
-        { excludeExtraneousValues: true }
-      );
-    }
-
+    const { itemId } = req.params;
+    const item = await itemService.getItem(itemId);
     res.json({ item });
   } catch (error) {
-    return res.status(500).json({ message: "Error parsing item" });
+    return res
+      .status(400)
+      .json({ message: "Oops, something wrong happened here :/" });
   }
 }
 

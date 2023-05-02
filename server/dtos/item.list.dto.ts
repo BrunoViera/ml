@@ -8,6 +8,8 @@ export default class ItemListDto {
 
   @Expose() condition!: string;
 
+  @Expose() category_id!: string;
+
   @Expose({ name: "thumbnail" }) picture!: string;
 
   @Expose()
