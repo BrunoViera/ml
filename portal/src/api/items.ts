@@ -1,4 +1,4 @@
-import { ItemsResponse } from "@/types/types";
+import { ItemResponse, ItemsResponse } from "@/types/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -18,7 +18,7 @@ export async function searchItems(query: string): Promise<ItemsResponse> {
   }
 }
 
-export async function getItem(id: string) {
+export async function getItem(id: string): Promise<ItemResponse> {
   try {
     const url = new URL(`/api/items/${id}`, API_URL);
 

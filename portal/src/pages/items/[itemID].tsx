@@ -1,3 +1,4 @@
+import { getCategory } from "@/api/categories";
 import { getItem } from "@/api/items";
 import Categories from "@/components/Categories";
 import DetailItem from "@/components/Item/DetailItem";
@@ -10,18 +11,24 @@ export default function Item() {
   const router = useRouter();
   const { itemID } = router.query;
   const [item, setItem] = useState<Item | undefined>();
+  const [cats, setCats] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const getItemData = useCallback(async () => {
+  const getViewData = useCallback(async () => {
     if (!itemID) return;
-    const response = await getItem(itemID.toString());
-    setItem(response.item);
+    const itemResponse = await getItem(itemID.toString());
+    setItem(itemResponse.item);
+
+    if (itemResponse.item) {
+      const catResponse = await getCategory(itemResponse.item?.category_id);
+      setCats(catResponse.categoryPath);
+    }
 
     setLoading(false);
   }, [itemID]);
 
   useEffect(() => {
-    getItemData();
+    getViewData();
   }, [itemID]);
 
   return (
@@ -30,7 +37,7 @@ export default function Item() {
         <Loader />
       ) : item ? (
         <>
-          <Categories categoryId={item.category_id} />
+          <Categories categories={cats} />
           <DetailItem item={item} />
         </>
       ) : (
