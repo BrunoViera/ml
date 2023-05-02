@@ -1,18 +1,24 @@
 import { plainToClass } from "class-transformer";
+import CategoryDto from "../dtos/category.dto";
 import ItemDetailDto from "../dtos/item.detail.dto";
 import ItemListDto from "../dtos/item.list.dto";
-import { ListItem } from "../types";
+import { Category, ListItem } from "../types";
 import { getExternalApiURL, getExternalSearchURL } from "../utils/envVars";
 
 const ITEMS_LIMIT = "4";
 
-async function getItems(searchBy: string | undefined): Promise<ListItem[]> {
+async function searchItems(
+  searchBy: string | undefined
+): Promise<Record<string, ListItem[] | string[]>> {
   if (!getExternalSearchURL()) {
     throw new Error("Bad configuration settings");
   }
 
+  let categories: string[] = [];
+  let items: ListItem[] = [];
+
   if (!searchBy) {
-    return [];
+    return { items, categories };
   }
 
   try {
@@ -23,14 +29,30 @@ async function getItems(searchBy: string | undefined): Promise<ListItem[]> {
 
     const response = await fetch(url.toString(), { method: "GET" });
     const body = await response.json();
+    const categoryFilter = body.filters.find(
+      (item: any) => (item.id = "category")
+    );
+
+    if (categoryFilter && categoryFilter.values[0]) {
+      const category: Category = plainToClass(
+        CategoryDto,
+        categoryFilter.values[0],
+        {
+          excludeExtraneousValues: true,
+        }
+      );
+
+      categories = category.getPath();
+    }
 
     try {
-      return body.results.map((i: unknown) =>
+      items = body.results.map((i: unknown) =>
         plainToClass(ItemListDto, i, { excludeExtraneousValues: true })
       );
     } catch (error) {
       throw new Error("Error parsing item");
     }
+    return { items, categories };
   } catch (error) {
     throw new Error("Error with external connection");
   }
@@ -79,5 +101,5 @@ async function getItem(itemId: string) {
 
 export default Object.freeze({
   getItem,
-  getItems,
+  searchItems,
 });
