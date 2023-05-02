@@ -1,15 +1,12 @@
 import { ListItem } from "@/types/types";
-import { getPriceLocale } from "@/utils/price";
+import { getPrintablePrice } from "@/utils/price";
 import Image from "next/image";
 import Link from "next/link";
+import FreeShippingIcon from "../icons/Shipping";
 
 export default function ListItem({ item }: { item: ListItem }) {
-  const price = (item.price.amount + item.price.decimals).toLocaleString(
-    getPriceLocale(item.price.currency)
-  );
-
   return (
-    <Link className="item__list" href={`/items/${item.id}`}>
+    <Link className="item__list" href={`/items/${item.id}`} target="_blank">
       <Image
         className="item__list-image"
         src={item?.picture}
@@ -18,7 +15,10 @@ export default function ListItem({ item }: { item: ListItem }) {
         alt=""
       />
       <div className="item__list-content">
-        <p className="item__list-content-price">$ {price}</p>
+        <p className="item__list-content-price">
+          {getPrintablePrice(item.price)}
+          {item.free_shipping ? <FreeShippingIcon /> : null}
+        </p>
         <p className="item__list-content-title">{item.title}</p>
       </div>
       <div className="item__list-location">{item.state_name}</div>
